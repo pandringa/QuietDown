@@ -1,17 +1,58 @@
 package com.peterandringa.quietdown;
 
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 
 public class MainActivity extends ActionBarActivity {
+    RelativeLayout circleButton;
+    TextView statusText;
+    boolean isOn = false;
+    TransitionDrawable animator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        circleButton = (RelativeLayout)findViewById(R.id.circleButton);
+        statusText = (TextView)findViewById(R.id.statusText);
+
+        Drawable backgrounds[] = new Drawable[2];
+        backgrounds[0] = getResources().getDrawable(R.drawable.circle_off);
+//        backgrounds[1] = getResources().getDrawable(R.drawable.circle_none);
+        backgrounds[1] = getResources().getDrawable(R.drawable.circle_on);
+
+        animator = new TransitionDrawable(backgrounds);
+
+        circleButton.setBackground(animator);
+
+        circleButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                if(!isOn){
+                    Log.i("CLICK", "turn on");
+                    animator.startTransition(200);
+                    statusText.setText(R.string.on);
+                }else{
+                    Log.i("CLICK", "turn off");
+                    animator.reverseTransition(200);
+                    statusText.setText(R.string.off);
+                }
+                isOn = !isOn;
+            }
+        });
+
     }
 
 
