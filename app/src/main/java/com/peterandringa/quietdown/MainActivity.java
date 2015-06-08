@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.estimote.sdk.EstimoteSDK;
+
 
 public class MainActivity extends ActionBarActivity {
     RelativeLayout circleButton;
@@ -23,6 +25,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EstimoteSDK.initialize(this, "quietdown", "04ceee898ae59ced3374c7bd79e2d267");
         setContentView(R.layout.activity_main);
 
         circleButton = (RelativeLayout)findViewById(R.id.circleButton);
