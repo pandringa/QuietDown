@@ -54,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
                 if(isOn && beacons.size() == 0){
                     turnOnNotifications();
                 }else if(!isOn && beacons.size() > 0 ){
-                    turnOfNotifications();
+                    turnOffNotifications();
                 }
             }
         });
