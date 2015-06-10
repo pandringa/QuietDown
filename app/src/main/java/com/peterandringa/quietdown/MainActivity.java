@@ -52,9 +52,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
                 if(isOn && beacons.size() == 0){
-                    turnOffNotifications();
-                }else if(!isOn && beacons.size() > 0 ){
                     turnOnNotifications();
+                }else if(!isOn && beacons.size() > 0 ){
+                    turnOfNotifications();
                 }
             }
         });
