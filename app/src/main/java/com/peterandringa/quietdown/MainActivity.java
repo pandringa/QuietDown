@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.AudioManager;
 import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -32,7 +33,7 @@ public class MainActivity extends ActionBarActivity {
     private static Region ALL_ESTIMOTE_BEACONS;
 
     private BeaconManager beaconManager;
-    private NotificationManager notificationManager;
+    private AudioManager audioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 
         // THE VIEW N STUFF
@@ -71,22 +72,6 @@ public class MainActivity extends ActionBarActivity {
         animator = new TransitionDrawable(backgrounds);
 
         circleButton.setBackground(animator);
-
-        circleButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                if(!isOn){
-                    Log.i("CLICK", "turn on");
-                    animator.startTransition(200);
-                    statusText.setText(R.string.on);
-                }else{
-                    Log.i("CLICK", "turn off");
-                    animator.reverseTransition(200);
-                    statusText.setText(R.string.off);
-                }
-                isOn = !isOn;
-            }
-        });
 
     }
 
@@ -141,10 +126,18 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void turnOnNotifications() {
-
+        Log.i("CLICK", "turn on");
+        animator.startTransition(200);
+        statusText.setText(R.string.on);
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        isOn = true;
     }
 
     public void turnOffNotifications() {
-
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+        Log.i("CLICK", "turn off");
+        animator.reverseTransition(200);
+        statusText.setText(R.string.off);
+        isOn = false;
     }
 }
