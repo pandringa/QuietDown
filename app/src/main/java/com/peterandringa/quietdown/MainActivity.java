@@ -2,18 +2,41 @@ package com.peterandringa.quietdown;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.estimote.sdk.Beacon;
+import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.EstimoteSDK;
+import com.estimote.sdk.Region;
+
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+    private static Region ALL_ESTIMOTE_BEACONS;
+
+    private BeaconManager beaconManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EstimoteSDK.initialize(this, "quietdown", "04ceee898ae59ced3374c7bd79e2d267");
+
+        beaconManager = new BeaconManager(this);
+        ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
+
+        Log.w("MainActivity", "is running.");
+
+        beaconManager.setRangingListener(new BeaconManager.RangingListener() {
+            @Override public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
+                Log.w("MainActivity", "Ranged beacons: " + beacons);
+            }
+        });
+
         setContentView(R.layout.activity_main);
     }
 
