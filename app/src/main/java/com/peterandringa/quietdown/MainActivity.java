@@ -50,7 +50,11 @@ public class MainActivity extends ActionBarActivity {
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
-                Log.w("MainActivity", "Ranged beacons: " + beacons);
+                if(isOn && beacons.size() == 0){
+                    turnOffNotifications();
+                }else if(!isOn && beacons.size() > 0 ){
+                    turnOnNotifications();
+                }
             }
         });
 
