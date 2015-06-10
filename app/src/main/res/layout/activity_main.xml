@@ -8,10 +8,10 @@
 
     <RelativeLayout android:layout_width="200dp"
         android:layout_height="200dp"
-        android:background="@drawable/circle"
         android:clickable="true"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:id="@+id/circleButton"
         >
         <TextView
             android:layout_width="wrap_content"
@@ -29,9 +29,10 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="30dp"
             android:layout_height="wrap_content"
-            android:text="@string/on"
+            android:text="@string/off"
             android:textAllCaps="true"
             android:textSize="80dp"
+            android:id="@+id/statusText"
             />
 
     </RelativeLayout>
