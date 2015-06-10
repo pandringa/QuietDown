@@ -77,6 +77,16 @@ public class MainActivity extends ActionBarActivity {
 
         circleButton.setBackground(animator);
 
+        circleButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(!isOn){
+                    turnOnNotifications();
+                }else{
+                    turnOffNotifications();
+                }
+            }
+        });
+
     }
 
     @Override
