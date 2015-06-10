@@ -1,15 +1,16 @@
 package com.peterandringa.quietdown;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -31,10 +32,14 @@ public class MainActivity extends ActionBarActivity {
     private static Region ALL_ESTIMOTE_BEACONS;
 
     private BeaconManager beaconManager;
+    private NotificationManager notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // THE LOGIC
+        // initialize the thing
         EstimoteSDK.initialize(this, "quietdown", "04ceee898ae59ced3374c7bd79e2d267");
 
         beaconManager = new BeaconManager(this);
@@ -43,11 +48,16 @@ public class MainActivity extends ActionBarActivity {
         Log.w("MainActivity", "is running.");
 
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
-            @Override public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
+            @Override
+            public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
                 Log.w("MainActivity", "Ranged beacons: " + beacons);
             }
         });
 
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+        // THE VIEW N STUFF
         setContentView(R.layout.activity_main);
 
         circleButton = (RelativeLayout)findViewById(R.id.circleButton);
@@ -80,6 +90,21 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //connect the beaconmanager to the activity thing
+        beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+            @Override
+            public void onServiceReady() {
+                try {
+                    beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
+                } catch (RemoteException e) {
+                    Log.e("MainActivity", "Cannot start ranging", e);
+                }
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -101,5 +126,25 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        try {
+            beaconManager.stopRanging(ALL_ESTIMOTE_BEACONS);
+        } catch (RemoteException e) {
+            Log.e("MainActivity", "Cannot stop but it does not matter now", e);
+        }
+
+    }
+
+    public void turnOnNotifications() {
+
+    }
+
+    public void turnOffNotifications() {
+
     }
 }
