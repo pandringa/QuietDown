@@ -20,14 +20,17 @@ import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.EstimoteSDK;
 import com.estimote.sdk.Region;
 
+import java.util.Collections;
 import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
     RelativeLayout circleButton;
     TextView statusText;
-    boolean isOn = false;
+    boolean isOn = true;
     TransitionDrawable animator;
+    int oldVolume;
+    int oldRingerMode;
 
     private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
     private static Region ALL_ESTIMOTE_BEACONS;
@@ -45,16 +48,25 @@ public class MainActivity extends ActionBarActivity {
 
         beaconManager = new BeaconManager(this);
         ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
-
-        Log.w("MainActivity", "is running.");
-
+        beaconManager.setBackgroundScanPeriod(5000, 5000);
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
-                if(isOn && beacons.size() == 0){
+                Beacon beacon = null;
+                for(Beacon b : beacons){
+                    if(b.getMajor() == 41792 && b.getMinor() == 11312){
+                        Log.w("", "Found beacon");
+                        beacon = b;
+                    }
+                }
+
+                if(!isOn && beacon == null){
+                    Log.w("BEACON", "turn on");
                     turnOnNotifications();
-                }else if(!isOn && beacons.size() > 0 ){
+                }else if(isOn && beacon != null){
                     turnOffNotifications();
+                    Log.w("BEACON", "turn off");
+                    Log.w("", beacons.toString());
                 }
             }
         });
@@ -69,9 +81,8 @@ public class MainActivity extends ActionBarActivity {
         statusText = (TextView)findViewById(R.id.statusText);
 
         Drawable backgrounds[] = new Drawable[2];
-        backgrounds[0] = getResources().getDrawable(R.drawable.circle_off);
-//        backgrounds[1] = getResources().getDrawable(R.drawable.circle_none);
-        backgrounds[1] = getResources().getDrawable(R.drawable.circle_on);
+        backgrounds[0] = getResources().getDrawable(R.drawable.circle_on);
+        backgrounds[1] = getResources().getDrawable(R.drawable.circle_off);
 
         animator = new TransitionDrawable(backgrounds);
 
@@ -80,8 +91,11 @@ public class MainActivity extends ActionBarActivity {
         circleButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(!isOn){
+                    Log.w("CLICK", "turn on");
+
                     turnOnNotifications();
                 }else{
+                    Log.w("CLICK", "turn off");
                     turnOffNotifications();
                 }
             }
@@ -140,17 +154,22 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void turnOnNotifications() {
-        Log.i("CLICK", "turn on");
-        animator.startTransition(200);
+        animator.reverseTransition(200);
         statusText.setText(R.string.on);
-        audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        oldVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        audioManager.setStreamMute(AudioManager.STREAM_NOTIFICATION, false);
+        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, oldVolume, 0);
+        audioManager.setRingerMode(oldRingerMode);
         isOn = true;
     }
 
     public void turnOffNotifications() {
-        audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-        Log.i("CLICK", "turn off");
-        animator.reverseTransition(200);
+        oldVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        oldRingerMode = audioManager.getRingerMode();
+        audioManager.setStreamMute(AudioManager.STREAM_NOTIFICATION, true);
+        audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, 0, 0);
+        audioManager.setRingerMode(0);
+        animator.startTransition(200);
         statusText.setText(R.string.off);
         isOn = false;
     }

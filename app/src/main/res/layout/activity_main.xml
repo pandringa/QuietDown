@@ -29,7 +29,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="30dp"
             android:layout_height="wrap_content"
-            android:text="@string/off"
+            android:text="@string/on"
             android:textAllCaps="true"
             android:textSize="80dp"
             android:id="@+id/statusText"
